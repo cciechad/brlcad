@@ -1,0 +1,299 @@
+#!/bin/sh
+#                         A R C H E R
+# BRL-CAD
+#
+# Copyright (c) 2002-2008 United States Government as represented by
+# the U.S. Army Research Laboratory.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# version 2.1 as published by the Free Software Foundation.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this file; see the file named COPYING for more
+# information.
+#
+###
+#
+# Archer
+#
+# Author(s):
+#    Bob Parker
+#    Doug Howard
+#
+# Description:
+#    Main for Archer.
+#
+#\
+ARCHER_HOME=`dirname $0`/..
+#\
+export ARCHER_HOME
+# restart using bwish \
+WISH="bwish"
+#\
+for ish in bwish bwish_d ; do
+# see if we're installed \
+    if test -f ${ARCHER_HOME}/bin/$ish ; then
+#\
+	WISH="${ARCHER_HOME}/bin/$ish"
+#\
+	break;
+#\
+    fi
+# see if we're not installed yet \
+    if test -f ${ARCHER_HOME}/bwish/$ish ; then
+#\
+	WISH="${ARCHER_HOME}/bwish/$ish"
+#\
+	break;
+#\
+    fi
+#\
+done
+#\
+exec $WISH $0 $@
+
+# normalize ARCHER_HOME
+if {[info exists env(ARCHER_HOME)]} {
+    set dir [file normalize $env(ARCHER_HOME)]
+} else {
+    set dir [file normalize [file join [file dir $argv0] ..]]
+}
+set env(ARCHER_HOME) $dir
+
+# Decide on a parent class for Archer
+#namespace eval Archer {
+#    if {1} {
+#	set parentClass itk::Toplevel
+#	set inheritFromToplevel 1
+#    } else {
+#	set parentClass TabWindow
+#	set inheritFromToplevel 0
+#    }
+#}
+
+# stupid blt needs blt_library to be set (must be done AFTER loading BLT...)
+set blt_library [file normalize [file join [bu_brlcad_root "lib"] blt2.4]]
+if {![file exists $blt_library]} {
+    set blt_library [file normalize [file join [bu_brlcad_data "src"] other blt library]]
+}
+if {![file exists $blt_library]} {
+    puts "ERROR: Unable to initialize Archer resources"
+    exit 1
+}
+
+# load archer guts
+if { [catch {package require Archer 1.0} _initialized] } {
+    puts "$_initialized"
+    puts ""
+    puts "ERROR: Unable to load Archer"
+    exit 1
+}
+
+set Archer::debug 0
+if { [info exists env(DEBUG)] } {
+    puts "Using ARCHER_HOME of $env(ARCHER_HOME)"
+    set Archer::debug $env(DEBUG)
+}
+
+# Initialize bgerror
+initBgerror
+
+
+# PROCEDURE: showMainWindow
+#
+# Show the main window.
+#
+# Arguments:
+#       None
+#
+# Results:
+#       No return.
+#
+proc showMainWindow {} {
+    if {$::ArcherCore::inheritFromToplevel} {
+	wm deiconify $::ArcherCore::application
+	raise $::ArcherCore::application
+	focus -force $::ArcherCore::application
+    } else {
+	wm deiconify .
+	raise .
+	focus -force .
+    }
+}
+
+# PROCEDURE: createSplashScreen
+#
+# Create the proper splash screen based on gui mode.
+#
+# Arguments:
+#       None
+#
+# Results:
+#       No return.
+#
+proc createSplashScreen {} {
+    global env
+
+    # XXX disabled until tkimg is working better
+    set useImage 1
+
+    if {$useImage} {
+	set image [image create photo -file [file join [bu_brlcad_data "tclscripts"] archer images aboutArcher.png]]
+	set ::ArcherCore::splash [Splash .splash -image $image]
+    } else {
+	set ::ArcherCore::splash [Splash .splash -message "Loading Archer ... please wait ..."]
+    }
+
+    update idletasks
+    $::ArcherCore::splash configure -background $::ArcherCore::SystemWindow
+    $::ArcherCore::splash center
+    update idletasks
+    $::ArcherCore::splash activate
+    after 3000 destroySplashScreen; # 3 more sec
+    update
+}
+
+# PROCEDURE: destroySplashScreen
+#
+# Makes sure the gui is ready to go and then
+# destroys the splash screen.
+#
+# Arguments:
+#       None
+#
+# Results:
+#       No return.
+#
+proc destroySplashScreen {} {
+    # check to see if main gui is ready
+    if {$::ArcherCore::showWindow == 0} {
+        after 1000 destroySplashScreen; # 1 more sec
+        return
+    }
+
+    if {$::ArcherCore::splash == ""} {
+	return
+    }
+    $::ArcherCore::splash deactivate
+    itcl::delete object $::ArcherCore::splash
+    set ::ArcherCore::splash ""
+    showMainWindow
+}
+
+proc exitArcher {archer} {
+    $archer askToSave
+
+    if {$::ArcherCore::inheritFromToplevel} {
+	wm withdraw $archer
+    } else {
+	wm withdraw .
+    }
+
+    if {$archer != ""} {
+	::itcl::delete object $archer
+    }
+
+    exit
+}
+
+# *************** Main Function ***************
+
+# PROCEDURE: main
+#
+# Main procedure for AJEM/MUVES GUI.  Sets up and handles initialization.
+#
+# Arguments:
+#       None
+#
+# Results:
+#       No return.
+#
+proc main {} {
+    global env
+    global tcl_platform
+    global argv
+
+    if {$::ArcherCore::inheritFromToplevel} {
+	set ::ArcherCore::application [Archer .\#auto]
+	wm title $::ArcherCore::application "Archer"
+	if {$tcl_platform(os) == "Windows NT"} {
+	    wm iconbitmap $::ArcherCore::application -default \
+		[file join [bu_brlcad_data "html"] manuals archer archer.ico]
+	}
+	set size [wm maxsize $::ArcherCore::application]
+	set w [lindex $size 0]
+	set h [lindex $size 1]
+	if {2048 < $w} {
+	    set w 2048
+	}
+	if {1600 < $h} {
+	    set h 1600
+	}
+        set width [expr {$w - 8}]
+        set height [expr {$h - 40}]
+	wm geometry $::ArcherCore::application "$width\x$height+0+0"
+	wm protocol $::ArcherCore::application WM_DELETE_WINDOW {exitArcher $::ArcherCore::application}
+    } else {
+	wm title . "Archer"
+	if {$tcl_platform(os) == "Windows NT"} {
+	    wm iconbitmap . -default \
+		[file join [bu_brlcad_data "doc"] html manuals archer archer.ico]
+	}
+	set ::ArcherCore::application [Archer .\#auto]
+	set size [wm maxsize .]
+	set w [lindex $size 0]
+	set h [lindex $size 1]
+	if {2048 < $w} {
+	    set w 2048
+	}
+	if {1600 < $h} {
+	    set h 1600
+	}
+        set width [expr {$w - 8}]
+        set height [expr {$h - 40}]
+	pack $::ArcherCore::application -expand yes -fill both
+	wm geometry . "$width\x$height+0+0"
+	wm protocol . WM_DELETE_WINDOW [list exitArcher $::ArcherCore::application]
+    }
+
+    if {$argv != ""} {
+	set target [lindex $argv 0]
+	set ext [file extension $target]
+	$::ArcherCore::application Load $target
+    }
+
+    $::ArcherCore::application configure -quitcmd [list exitArcher $::ArcherCore::application]
+
+    update
+}
+
+# TCL script execution start HERE!
+wm withdraw .
+
+# start splash screen
+createSplashScreen
+
+# do main procedure
+if { [catch {main} _runnable] } {
+	puts "$_runnable"
+	puts ""
+	puts "Unexpected error encountered while running Archer."
+	puts "Aborting."
+	exit 1
+}
+set ::ArcherCore::showWindow 1
+
+# Local Variables:
+# mode: sh
+# tab-width: 8
+# sh-indentation: 4
+# sh-basic-offset: 4
+# indent-tabs-mode: t
+# End:
+# ex: shiftwidth=4 tabstop=8

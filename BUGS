@@ -1,0 +1,285 @@
+BRL-CAD Bugs
+============
+
+Bugs should be reported to the bug tracker on the project website at
+http://sourceforge.net/tracker/?atid=640802&group_id=105292
+
+The bugs and issues listed in here may or may not be the same as or
+related to the bugs reported to the bug tracker.  In general, users
+should not look to this file for information regarding the status of
+bugs.  Informal bug-related information that is intended for
+developers will generally be found here.  This may include short term
+issues that are in active development as well as long term and
+on-going issues.
+
+Recent Bugs
+-----------
+
+* fast4-g skips lines while processing if there are DOS line endings
+
+* pipe primitive has a BU_GETSTRUCT malloc getting called during
+  raytracing that kills performance by more than an order of magnitude
+  (especially when the light source is a pipe and there are a lot of
+  shadow rays)
+
+* bump shader seems to be busted.  only renders as flat by itself and
+  stacked with phong it seems to ignore the uv settings.
+
+* rtweight prints incorrect units when units are set to ft.  Appears
+  to trace back to unit handling in view_end in viewweight.c.  This
+  logic should be replaced using the proper libbu functions.
+
+* the graphics window does not acquire keybinding focus in mged on
+  ubuntu linux.  key events go to the command window even with the
+  graphics window has focus.
+
+* /dev/ogl framebuffer is not refreshing/updating on mac os x,
+  resulting in the window remaining blank until you give expose events
+
+* report of mged being locked up on startup taking full cpu, works
+  fine with with -c with X dm.
+
+* MGED File->Preferences->Fonts results in error "named font "button
+  _font" doesn't exist on Linux.
+
+* lingering default isn't working for at least one linux user
+
+* rtwizard seems to be busted (again)
+
+* mged tab-completion doesn't work if the object names have spaces
+
+* OpenGL display manager doesn't refresh automatically when the
+  context is invalidated (on Mac OS X) any more
+
+* Open dialog in MGED seems rather busted for scrolling and selection
+  (seems to be Mac OS X specific)
+
+* turning on Framebuffer->Rectangle Area in mged disables the
+  embedded framebuffer diplay on Mac OS X when you sweep a raytrace
+  rectangle.  sweeping still works if you leave it at All.
+
+* invalid shaders result in an "Unable to locate where BRL-CAD ... is
+  installed" message that refers to being unable to find a
+  /lib/libSHADER.so file.  Quite a bogus message and probably not
+  something that should abort the ray-trace.
+
+* rtedge seems to get stuck in a loop at the end of rendering, never
+  terminates (unless you rtabort/kill the process); works with -P1
+
+* nirt fails to report LOS and sometimes even hits on a BoT that is
+  marked as unoriented or is inverted (even though it sometimes will
+  report the segments, just without LOS)
+
+* nirt/query_ray reports intersection messages in triplicate if the
+  shot routines miss but still print out messages
+
+* mged's plot tool (the gui one, not the 'plot' command) outputs a
+  plot file that has an erase as the last command, causing empty plots
+
+* interactive mouse edits in mged can go haywire on Mac OS X with
+  snap-to-grid enabled
+
+* overlap tool in mged encourages very inefficient CSG operations
+  (e.g. a simple bolt with an entire hull armor subtracted)
+
+* BoT values are always listed in mm when a point is selected instead
+  of in current editing units.
+
+* a character is (still) sometimes captured by the cursor box
+
+* permute (in mged) requires apply or save before 'new' vertex values
+  will function properly as keypoints.
+
+* facedef then move face undoes the facedef in mged
+
+* dsp primitive is going into what seems to be an unbounded memory
+  allocation loop during prep, inside dsp_layers().
+
+* crashes during photonmap raytrace of m35 where right node is invalid
+  rt -o test.pix -V 1.0 -P4 -J0 -l7 -A0 ~/Desktop/m35.g all.g box.r sph.r
+
+* libfb cannot utilize standard output/error "device" files without
+  path trickery.  it recognizes the /dev/ prefix and presumes it's a
+  libfb device instead of a filesystem device.
+
+   OK: rt -F/./dev/stdout
+  BAD: rt -F/dev/stdout
+
+* libfb cannot open a file descriptor when piping/redirecting output.
+
+   OK: rt -F/./dev/stdout moss.g all.g
+  BAD: rt -F/./dev/stdout moss.g all.g > test.pix
+
+* ray-tracers assume a seekable output stream.  libfb reports numerous
+  fseek errors and outputs slightly corrupted pix data.
+
+   OK: rt -o test.pix moss.g all.g && pix-png test.pix > test.png && rm -f test.pix
+  BAD: rt -o /dev/stdout moss.g all.g | pix-png > test.png
+
+* running any of the various mged commands (e.g. clicking the raytrace
+  button many times quickly, or running rtarea on a large model) that
+  output a lot of data will hang mged (idle cpu utilization).
+
+* mged in console mode goes into an inf loop if you try to read from
+  stdin using Tcl routines (e.g. read stdin, fgets stdin blah).
+
+* mged in GUI mode rejects reads on stdin
+
+* solids.sh regression test fails on Mac OS X with one pixel
+  off-by-many on the edge of the middle ARB8 when using an optimized
+  -O3 compile (-fno-unsafe-math-optimizations makes no difference)
+
+* tessellation of some pipe in toyjeep.g fails (rather reliably) on
+  some given bend
+
+* tgc reports one hit errors though hit point has 0,0,0 direction
+  implying that maybe the point was supposedly deleted.
+
+* rtedge is not respecting the -c"set" options.  needs to give some
+  indication that they were parsed too since it ignores unrecognized
+  values apparently.
+
+* fbhelp sends some of the output to stdout and some to stderr...
+
+* debugbu 2 immediately reports a bu_vls_free() error.. apparently
+  been a problem since 4.5 days.  this occurs because
+  bu_memdebug_add() is not called unless memory checking is enabled
+  via bu_debug.  so when bu_debug is set to 2 or 3, it ends up
+  reporting errors during bu_free() for items that were allocated and
+  were not yet being tracked.
+
+* mged View menu says I and O are keybindings for zoom in/out -- they
+  are apparently not.
+
+* raytracers report the wrong amount of cumulative time (reports as
+  0.0 seconds elapsed) on amd64 linux; most likely the same pthread
+  accounting bug visited a couple years ago.
+
+* Create menu.. create "part" boo hiss..
+
+* wavelet isn't working correctly on a simple image decomposition &
+  reconstruction.
+
+* query_ray can't find nirt if not installed
+
+* fbed is looking for /usr/lib/vfont/nonie.r.12
+
+* mged doesn't check if html_dir does not exist when searching for
+  docs/browser.
+
+* permute then translate doesn't refresh the graphics window
+    permute 4378
+    translate menus
+    p 0 0 0
+    p 0 0 0
+
+* constrained axis translation bindings on OS X don't work
+    object/matrix edit
+    shift-alt mouse (left/mid/right for x/y/z respectively) should work
+
+* mged documentation doesn't open on OS X
+
+* the findfont directive in gv postscript is reporting font not found
+
+* concave arbs give correct wireframe but do not raytrace correctly.
+
+* rtwizard/rtedge creates incorrect "fuzzy" edge overlay when creating
+  a "Ghost Image with Insert and Lines" that includes a light source
+  and object close to surface (e.g. moss.g; select plane, light, and
+  cone for ghost; select cone for insert and lines.)
+
+* rtwizard doesn't work with perspective
+
+* mged's solid illuminate doesn't work when Lighting is turned on
+
+* raytrace of -s64 and remote -F/dev/Xl crashes inside a memcpy during
+  the first fb_write().  seems to only occur on an unbuffered render
+  to a X24 framebuffer, incremental/buffered worked fine.  acts like
+  stack corruption.
+
+* g2asc exports attr lines but will not grok them on asc2g
+
+* mged's matrix selection does not modify the correct matrix if there
+  are multiply referenced non-unique paths (e.g. referencing the same
+  object N times in a combination).
+
+* facetize -t doesn't work (tnurb support)
+
+* on os x, the -fast option results in an odd optimization/aliasing
+  bug where rtip contents are lost in rt after returning from
+  rt_gettrees().
+
+* report of rtwizard hanging at 40% on Debian (from binary distro)
+
+* make extrude crashes
+
+* tra in console mode outputs a warning about mged_players
+
+* mged primitive editor doesn't accept/apply values to disk for
+  certain primitives (e.g. sph)
+
+* photon map cache file doesn't work (seems to crash rt on use)
+
+* enabling perspective mode horks shaded mode, also Z clipping
+  shouldn't be required to get the shading.
+
+* an underlay framebuffer does not underlay with shaded mode
+
+* bu_malloc() function and company take an unsigned int argument and
+  will overflow without notification (since it is unsigned) resulting
+  in less memory allocated than one requested.
+
+* rtweight chokes on a .density file that has less than 3 values per
+  line (infinite loop).  also gives infinite areas when presented with
+  an empty .density file.
+
+* setting src/librt/db5_io.c's AVS_ADD off in db5_import_attributes
+  causes bad things to happen and it really shouldn't.
+
+* vrml exporter (and probably others) doesn't export primitives
+  directly as one might expect like the ray-tracers, only regions.
+
+* sketches extruded with non-square AB vectors results in inner sketch
+  components not getting scaled properly.
+
+* rtcheck is ignoring fastgen tagged geometry since no multioverlap
+  handler is set.
+
+* bot-bldxf fails in db_walk_tree(), interface may have changed
+
+* you can't run a make benchmark unless you're compiling in place
+
+
+Older Bugs
+----------
+
+* several manpages are missing or out of date for various tools
+
+* X11 framebuffer often fails to display on certain middle bit depth
+  displays. (e.g. 15 or 16 bit depth)
+
+* mk_lcomb fails on large combinations due to mk_tree_pure() building
+  a left-heavy tree and wdb_put_internal() then recursively performing
+  lookup and put calls.
+
+
+Annoyances
+----------
+
+* matrix edits on objects in mged require you to select a primitive
+  for a coordinate system reference.  this can be counterintuitive and
+  confusing.
+
+* there are frequently modality errors when entering edit mode as
+  control and middle mouse rebind to model edit instead of view edit.
+
+---
+Bugs should be reported to the bug tracker on the project website at
+http://sourceforge.net/tracker/?atid=640802&group_id=105292
+
+BUGS should be formatted to column 70 (M-q in emacs), no tabs.
+
+// Local Variables:
+// mode: Text
+// fill-column: 70
+// End:

@@ -1,0 +1,33 @@
+Contained in this directory are codes that are written to work with
+and/or link against external packages.  These codes are often written
+as plugins, modules, or libraries to to some external package and
+generally may not even attempt to compile if the optional codes are
+not enabled during configure.  Even after being enabled, some manual
+setup may be required so that these codes may find requisite external
+headers or libraries that are needed for compilation.
+
+Contents
+--------
+
+Cubit
+	This code is a CUBIT translator that will read a given BRL-CAD
+geometry file and convert the included 3D geometry to a CUBIT readable
+representation (.sat).  This code utilizes the CUBIT's CGM API and must be
+linked against CUBIT's CGM libraries and the ACIS CAD kernel.
+
+EndgameFramework
+	This code is a "Simulation Module" for the Endgame Framework
+that provides BRL-CAD import functionality for v4/v5 binary geometry
+database files.
+
+ProEngineer
+	This code is a Pro/Engineer exporter plugin module intended to
+be used directly within the Pro/Engineer environment (e.g. Wildfire).
+Compilation of this code requires Pro/Toolkit, a separately licensed
+module from PTC.
+
+Unigraphics
+	This code is a Unigraphics (now called NX) importer that will
+parse a given Unigraphics geometry file and convert the included 3D
+geometry to a BRL-CAD representation.  This code utilizes the UGOPEN
+API and must be linked against the UGOPEN libraries.

@@ -1,0 +1,4 @@
+#! /bin/sh
+# @(#)$Header$ (BRL)
+
+exec /usr/brlcad/bin/jove /usr/brlcad/share/brlcad/7.12.6/jove/teach-jove

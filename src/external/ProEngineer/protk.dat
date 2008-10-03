@@ -1,0 +1,9 @@
+name proe-brl
+# startup spawn
+# exec_file /sgi_mips4/proe-brl
+startup dll
+exec_file /usr/brlcad/share/brlcad/7.12.6/pro-engineer/i486_linux/libproe2brl.so
+text_dir /usr/brlcad/share/brlcad/7.12.6/pro-engineer/text
+revision 7.12.6.20080818
+description Convert currently displayed model to BRL-CAD
+end

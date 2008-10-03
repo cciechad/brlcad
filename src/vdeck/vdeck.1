@@ -1,0 +1,115 @@
+.TH VDECK 1V VMB
+.\"                        V D E C K . 1
+.\" BRL-CAD
+.\"
+.\" Copyright (c) 2005-2008 United States Government as represented by
+.\" the U.S. Army Research Laboratory.
+.\"
+.\" Redistribution and use in source (Docbook format) and 'compiled'
+.\" forms (PDF, PostScript, HTML, RTF, etc), with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\"
+.\" 1. Redistributions of source code (Docbook format) must retain the
+.\" above copyright notice, this list of conditions and the following
+.\" disclaimer.
+.\"
+.\" 2. Redistributions in compiled form (transformed to other DTDs,
+.\" converted to PDF, PostScript, HTML, RTF, and other formats) must
+.\" reproduce the above copyright notice, this list of conditions and
+.\" the following disclaimer in the documentation and/or other
+.\" materials provided with the distribution.
+.\"
+.\" 3. The name of the author may not be used to endorse or promote
+.\" products derived from this documentation without specific prior
+.\" written permission.
+.\"
+.\" THIS DOCUMENTATION IS PROVIDED BY THE AUTHOR AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+.\" OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+.\" BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+.\" LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+.\" USE OF THIS DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\".\".\"
+'\"	last edit:	86/03/26	D A Gwyn
+'\"	SCCS ID:	@(#)vdeck.1	2.4
+.SH NAME
+vdeck \- generate COM-GEOM decks from a GED file
+.SH SYNOPSIS
+.B vdeck
+.RB file .vg
+.SH DESCRIPTION
+A list of
+objects
+to be converted are selected interactively from the table of contents.
+String matching operators (wild cards) like those used to specify file
+or directory names in
+.IR sh\^ (1)
+are provided for this purpose, as well as to search for names in the
+table of contents.
+.P
+One or more COM-GEOM decks can be output.
+Each deck consists of three
+files:
+the solid,
+region,
+and region-id
+tables.
+These can be combined with
+.IR cat\^ (1).
+.P
+A menu of the commands and their usage is available by typing
+.B ?
+to
+the program.
+.SH WARNING
+.I Vdeck\^
+is intended for new-style
+.I mged\^
+databases only.
+Files produced by older versions of GED
+may be incompatible with
+.IR vdeck\^ .
+.SH FILES
+.PD 0
+.TP "\w'/tmp/reg???   'u"
+solids
+default solid table output
+.TP
+regions
+default region table output
+.TP
+region_ids
+default region
+.SM ID
+table output
+.TP
+*.st
+unique solid table output
+.TP
+*.rt
+unique region table output
+.TP
+*.id
+unique region
+.SM ID
+table output
+.TP
+/tmp/dis???
+temporary
+.TP
+/tmp/reg???
+temporary
+.SH "SEE ALSO"
+cat(1), gedplot(1V), mged(1B).
+.SH AUTHORS
+Gary S. Moss, BRL/VLD-VMB
+.br
+Keith Applin, BRL/VLD-TAB

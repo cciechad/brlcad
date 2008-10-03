@@ -1,0 +1,5 @@
+This directory contains Tcl source files that work on all the platforms
+where Tcl runs (e.g. UNIX, PCs, and MacOSX).  Platform-specific
+sources are in the directories ../unix, ../win, and ../macosx.
+
+RCS: @(#) $Id: README 29250 2007-11-06 21:35:32Z erikgreenwald $

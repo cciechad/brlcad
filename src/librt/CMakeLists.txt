@@ -1,0 +1,168 @@
+set(LIBRT_SOURCES
+    bezier_2d_isect.c
+    binary_obj.c
+    bomb.c
+    bool.c
+    bundle.c
+    cmd.c
+    cut.c
+    db5_alloc.c
+    db5_bin.c
+    db5_comb.c
+    db5_io.c
+    db5_scan.c
+    db5_types.c
+    db_alloc.c
+    db_anim.c
+    db_comb.c
+    db_flags.c
+    db_inmem.c
+    db_io.c
+    db_lookup.c
+    db_match.c
+    db_open.c
+    db_path.c
+    db_scan.c
+    db_tree.c
+    db_walk.c
+    dir.c
+    dspline.c
+    fortray.c
+    globals.c
+    htbl.c
+    many.c
+    mater.c
+    memalloc.c
+    mirror.c
+    mkbundle.c
+    opennurbs_ext.cpp
+    oslo_calc.c
+    oslo_map.c
+    pr.c
+    prep.c
+    primitives/arb8/arb8.c
+    primitives/arbn/arbn.c
+    primitives/ars/ars.c
+    primitives/bot/bot.c
+    primitives/brep/brep.cpp
+    primitives/bspline/bspline.c
+    primitives/bspline/nurb_basis.c
+    primitives/bspline/nurb_bezier.c
+    primitives/bspline/nurb_bound.c
+    primitives/bspline/nurb_c2.c
+    primitives/bspline/nurb_copy.c
+    primitives/bspline/nurb_diff.c
+    primitives/bspline/nurb_eval.c
+    primitives/bspline/nurb_flat.c
+    primitives/bspline/nurb_interp.c
+    primitives/bspline/nurb_knot.c
+    primitives/bspline/nurb_norm.c
+    primitives/bspline/nurb_plot.c
+    primitives/bspline/nurb_poly.c
+    primitives/bspline/nurb_ray.c
+    primitives/bspline/nurb_refine.c
+    primitives/bspline/nurb_reverse.c
+    primitives/bspline/nurb_solve.c
+    primitives/bspline/nurb_split.c
+    primitives/bspline/nurb_tess.c
+    primitives/bspline/nurb_trim.c
+    primitives/bspline/nurb_trim_util.c
+    primitives/bspline/nurb_util.c
+    primitives/bspline/nurb_xsplit.c
+    primitives/cline/cline.c
+    primitives/dsp/dsp.c
+    primitives/ebm/ebm.c
+    primitives/ehy/ehy.c
+    primitives/ell/ell.c
+    primitives/epa/epa.c
+    primitives/eto/eto.c
+    primitives/extrude/extrude.c
+    primitives/grip/grip.c
+    primitives/half/half.c
+    primitives/hf/hf.c
+    primitives/hyp/hyp.c
+    primitives/metaball/metaball.c
+    primitives/nmg/nmg.c
+    primitives/nmg/nmg_bool.c
+    primitives/nmg/nmg_ck.c
+    primitives/nmg/nmg_class.c
+    primitives/nmg/nmg_eval.c
+    primitives/nmg/nmg_extrude.c
+    primitives/nmg/nmg_fcut.c
+    primitives/nmg/nmg_fuse.c
+    primitives/nmg/nmg_index.c
+    primitives/nmg/nmg_info.c
+    primitives/nmg/nmg_inter.c
+    primitives/nmg/nmg_manif.c
+    primitives/nmg/nmg_mesh.c
+    primitives/nmg/nmg_misc.c
+    primitives/nmg/nmg_mk.c
+    primitives/nmg/nmg_mod.c
+    primitives/nmg/nmg_plot.c
+    primitives/nmg/nmg_pr.c
+    primitives/nmg/nmg_pt_fu.c
+    primitives/nmg/nmg_rt_isect.c
+    primitives/nmg/nmg_rt_segs.c
+    primitives/nmg/nmg_tri.c
+    primitives/nmg/nmg_visit.c
+    primitives/part/part.c
+    primitives/pipe/pipe.c
+    primitives/poly/poly.c
+    primitives/rec/rec.c
+    primitives/rhc/rhc.c
+    primitives/rpc/rpc.c
+    primitives/sketch/sketch.c
+    primitives/sph/sph.c
+    primitives/submodel/submodel.c
+    primitives/superell/superell.c
+    primitives/tgc/tgc.c
+    primitives/tor/tor.c
+    primitives/vol/vol.c
+    regionfix.c
+    roots.c
+    shoot.c
+    spectrum.c
+    storage.c
+    table.c
+    tcl.c
+    transform.c
+    tree.c
+    vers.c
+    vlist.c
+    wdb.c
+)
+
+set(IGNORED_SOURCES
+    brep_test.cpp
+    nurb_example.c
+    primitives/xxx/xxx.c
+)
+
+if(MSVC)
+    set(LIBRT_SOURCES
+        ${LIBRT_SOURCES}
+        timer-nt.c
+    )
+else(MSVC)
+    set(LIBRT_SOURCES
+        ${LIBRT_SOURCES}
+        timer42.c
+    )
+endif(MSVC)
+
+include_directories(
+    ../../include
+    ../other/libz
+    ../other/openNURBS
+    ../other/libregex
+    ../other/tcl/generic
+    ../other/tnt
+)
+
+add_definitions(
+    -DHAVE_CONFIG_H
+    -DBRLCADBUILD
+    -DON_DLL_IMPORTS
+)
+
+add_library(librt ${LIBRT_SOURCES})

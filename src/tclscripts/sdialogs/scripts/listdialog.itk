@@ -1,0 +1,125 @@
+#                  L I S T D I A L O G . I T K
+# BRL-CAD
+#
+# Copyright (c) 2006-2008 United States Government as represented by
+# the U.S. Army Research Laboratory.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# version 2.1 as published by the Free Software Foundation.
+#
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this file; see the file named COPYING for more
+# information.
+#
+###
+#
+# DESCRIPTION
+#    Standard list dialog.  Part of standard dialogs.
+#
+# AUTHOR
+#    Keith Bowman
+#    Doug Howard
+#    Bob Parker
+#
+##############################################################
+
+#
+# Usual options.
+#
+itk::usual Listdialog {
+    keep -background -cursor -foreground -modality
+    keep -master -title -height -width
+}
+
+::itcl::class sdialogs::Listdialog {
+    inherit iwidgets::Dialog
+
+    itk_option define -label label Label ""
+
+    constructor {args} {}
+    destructor {}
+
+    public {
+	method get {}
+	method insert {index string}
+    }
+
+    protected {
+    }
+
+    private {
+    }
+}
+
+#
+# Provide a lowercased access method for the Dialog class.
+#
+proc ::sdialogs::listdialog {pathName args} {
+    uplevel ::sdialogs::Listdialog $pathName $args
+}
+
+# ------------------------------------------------------------
+#                      CONSTRUCTOR
+# ------------------------------------------------------------
+::itcl::body sdialogs::Listdialog::constructor {args} {
+
+    # remove unneeded buttons
+    hide Apply
+    hide Help
+
+    # configure OK & Cancel
+    buttonconfigure OK \
+	-defaultring no \
+	-borderwidth 1 \
+	-pady 0
+    buttonconfigure Cancel \
+	-defaultring no \
+	-borderwidth 1 \
+	-pady 0
+
+    # add entry widget
+    set csite [childsite]
+
+    itk_component add listbox {
+	::iwidgets::scrolledlistbox $csite.listbox \
+	    -labelvariable [::itcl::scope itk_option(-label)]
+    } {
+	keep -textbackground -labelpos -labelfont
+	keep -vscrollmode -hscrollmode -selectmode
+	rename -width -textwidth textWidth Width
+    }
+
+    pack $itk_component(listbox) -padx 2 -pady 2 -expand yes -fill both
+
+    eval itk_initialize $args
+}
+
+::itcl::body sdialogs::Listdialog::destructor {} {
+}
+
+::itcl::body sdialogs::Listdialog::get {} {
+    set selected ""
+    foreach elem [$itk_component(listbox) curselection] {
+	lappend selected [$itk_component(list) get $elem]
+    }
+    return $selected
+}
+
+::itcl::body sdialogs::Listdialog::insert {index string} {
+    $itk_component(listbox) insert $index $string
+}
+
+# Local Variables:
+# mode: Tcl
+# tab-width: 8
+# c-basic-offset: 4
+# tcl-indent-level: 4
+# indent-tabs-mode: t
+# End:
+# ex: shiftwidth=4 tabstop=8
